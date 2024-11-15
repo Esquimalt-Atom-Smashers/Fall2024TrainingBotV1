@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
-    public SwerveModule[] mSwerveMods;
+    private SwerveModule[] mSwerveMods;
     public NavXSubsystem gyro;
 
     public SwerveSubsystem() {
@@ -55,16 +55,12 @@ public class SwerveSubsystem extends SubsystemBase {
                                     translation.getY(), 
                                     rotation)
                                 );
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
-
-        for(SwerveModule module : mSwerveMods){
-            module.setDesiredState(swerveModuleStates[module.moduleNumber], isOpenLoop);
-        }
+        setModuleStates(swerveModuleStates);
     }    
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxWheelSpeed);
         
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
@@ -95,13 +91,11 @@ public class SwerveSubsystem extends SubsystemBase {
         return positions;
     }
 
+    //TODO: this should only be in the subsystem if it is making calculating an offset, otherwise it shuld be a method in the 
+    // Gyro subsystem. This is redundant.
     public void zeroGyro(){
         gyro.reset();
     }
-
-    // public Rotation2d getYaw() {
-    //     return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getRotation2d) : Rotation2d.fromDegrees(gyro.getYaw());
-    // }
 
     public void resetModulesToAbsolute(){
         for(SwerveModule mod : mSwerveMods){

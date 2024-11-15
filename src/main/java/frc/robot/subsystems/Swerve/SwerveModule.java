@@ -68,7 +68,7 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
-            double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
+            double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxWheelSpeed;
             mDriveMotor.setControl(voltageRequestDrive.withOutput(voltageOutput));
         }
         else {
@@ -80,7 +80,7 @@ public class SwerveModule {
 
     //TODO go over this to make sure the angle makes sense
     private void setAngle(SwerveModuleState desiredState){
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxWheelSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
         double angleD= angle.getDegrees();
         mAngleMotor.setControl(positionVoltageRequestAngle.withPosition(angleD/360));
         lastAngle = angle;

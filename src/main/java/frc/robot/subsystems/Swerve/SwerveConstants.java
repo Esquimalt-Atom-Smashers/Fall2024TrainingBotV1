@@ -18,7 +18,7 @@ public final class SwerveConstants {
 
     /* Swerve Kinematics 
         * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
-        public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
         new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
         new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
         new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
@@ -65,7 +65,7 @@ public final class SwerveConstants {
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxSpeed = 5.0; //TODO: This must be tuned to specific robot
+    //public static final double maxSpeed = 5.0; //TODO: This must be tuned to specific robot
     public static final double maxWheelSpeed = 5200/driveGearRatio/60*wheelCircumference;//rpm/gear ratio*circumference/60rps
     /** Radians per Second */
     public static final double maxAngularVelocity = 10.0;// Radians per second //TODO: This must be tuned to specific robot
