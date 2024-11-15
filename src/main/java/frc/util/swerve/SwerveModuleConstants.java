@@ -27,4 +27,5 @@ public class SwerveModuleConstants {
         this.cancoderID = canCoderID;
         this.angleOffset = Rotation2d.fromDegrees(angleOffsetDegrees);
     }
+    
 }

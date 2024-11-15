@@ -4,17 +4,17 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants;
-import frc.robot.Constants.Swerve;
-import frc.robot.Robot;
 import frc.util.math.SwerveConversions;
 import frc.util.swerve.CTREModuleState;
 import frc.util.swerve.SwerveModuleConstants;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -23,6 +23,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
 public class SwerveModule {
     public int moduleNumber;
@@ -37,7 +38,7 @@ public class SwerveModule {
     private VelocityVoltage velocityVoltageRequestDrive = new VelocityVoltage(0).withSlot(0);
     private VoltageOut voltageRequestDrive = new VoltageOut(0);
     
-    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(Swerve.driveKS, Swerve.driveKV, Swerve.driveKA);
+    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(SwerveConstants.driveKS, SwerveConstants.driveKV, SwerveConstants.driveKA);
 
     protected SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
@@ -67,7 +68,7 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
-            double voltageOutput = 12*desiredState.speedMetersPerSecond / Swerve.maxSpeed;
+            double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxSpeed;
             mDriveMotor.setControl(voltageRequestDrive.withOutput(voltageOutput));
         }
         else {
@@ -79,7 +80,7 @@ public class SwerveModule {
 
     //TODO go over this to make sure the angle makes sense
     private void setAngle(SwerveModuleState desiredState){
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Swerve.maxSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
         double angleD= angle.getDegrees();
         mAngleMotor.setControl(positionVoltageRequestAngle.withPosition(angleD/360));
         lastAngle = angle;
@@ -97,12 +98,16 @@ public class SwerveModule {
     }
 
     public void resetToAbsolute(){
-        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), Swerve.angleGearRatio);
+        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.angleGearRatio);
         mAngleMotor.setPosition(absolutePosition);
     }
 
-    private void configAngleEncoder(){        
-        angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCanCoderConfig);
+    private void configAngleEncoder(){   
+        CANcoderConfiguration swerveCanCoderConfig= new CANcoderConfiguration();
+        swerveCanCoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        swerveCanCoderConfig.MagnetSensor.SensorDirection = SwerveConstants.canCoderInvert;
+
+        angleEncoder.getConfigurator().apply(swerveCanCoderConfig);
         MagnetSensorConfigs myMagnetSensorConfigs = new MagnetSensorConfigs();
         angleEncoder.getConfigurator().refresh(myMagnetSensorConfigs);
         myMagnetSensorConfigs.MagnetOffset = -angleOffset.getDegrees() / 360;
@@ -110,31 +115,62 @@ public class SwerveModule {
     }
 
     private void  configAngleMotor() {
+        CurrentLimitsConfigs angleSupplyLimit = new CurrentLimitsConfigs();
+        angleSupplyLimit.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimit;
+        angleSupplyLimit.SupplyCurrentLimit = SwerveConstants.angleContinuousCurrentLimit;
+        angleSupplyLimit.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        
+        TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
+        swerveAngleFXConfig.Slot0.kP = SwerveConstants.angleKP;
+        swerveAngleFXConfig.Slot0.kI = SwerveConstants.angleKI;
+        swerveAngleFXConfig.Slot0.kD = SwerveConstants.angleKD;
+        //swerveAngleFXConfig.Slot0.kS = angleKS;
+        //swerveAngleFXConfig.Slot0.kV = angleKV;
+        swerveAngleFXConfig.CurrentLimits = angleSupplyLimit;
+        swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;;
+        
         TalonFXConfigurator configurator = mAngleMotor.getConfigurator();
-        configurator.apply(Robot.ctreConfigs.swerveAngleFXConfig);
+        configurator.apply(swerveAngleFXConfig);
 
         MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 
-        outputConfigs.Inverted = Constants.Swerve.angleMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        outputConfigs.NeutralMode = Constants.Swerve.angleNeutralMode;
+        outputConfigs.Inverted = SwerveConstants.angleMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        outputConfigs.NeutralMode = SwerveConstants.angleNeutralMode;
 
         configurator.apply(outputConfigs);
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        feedbackConfigs.RotorToSensorRatio = Constants.Swerve.angleGearRatio;
+        feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
     }
 
-    private void configDriveMotor(){        
+    private void configDriveMotor(){  
+        
+        /* Swerve Drive Motor Configuration */
+        CurrentLimitsConfigs driveSupplyLimit = new CurrentLimitsConfigs();
+        driveSupplyLimit.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimit;
+        driveSupplyLimit.SupplyCurrentLimit = SwerveConstants.driveContinuousCurrentLimit;
+        driveSupplyLimit.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
+
+        swerveDriveFXConfig.Slot0.kP = SwerveConstants.driveKP;
+        swerveDriveFXConfig.Slot0.kI = SwerveConstants.driveKI;
+        swerveDriveFXConfig.Slot0.kD = SwerveConstants.driveKD;
+        swerveDriveFXConfig.Slot0.kS = SwerveConstants.driveKS;
+        swerveDriveFXConfig.Slot0.kV = SwerveConstants.driveKV;
+        swerveDriveFXConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = SwerveConstants.openLoopRamp;
+        swerveDriveFXConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = SwerveConstants.closedLoopRamp;
+        swerveDriveFXConfig.CurrentLimits = driveSupplyLimit;
+
         TalonFXConfigurator configurator = mDriveMotor.getConfigurator();
-        configurator.apply(Robot.ctreConfigs.swerveDriveFXConfig);
+        configurator.apply(swerveDriveFXConfig);
 
         MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 
-        outputConfigs.NeutralMode = Constants.Swerve.driveNeutralMode;
-        outputConfigs.Inverted = Constants.Swerve.driveMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        outputConfigs.NeutralMode = SwerveConstants.driveNeutralMode;
+        outputConfigs.Inverted = SwerveConstants.driveMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         
         configurator.apply(outputConfigs);
     }

@@ -1,5 +1,5 @@
 package frc.util.math;
-import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.Swerve.SwerveConstants;
 
 public class SwerveConversions {
 
@@ -88,8 +88,8 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double falconToMPS(double velocitycounts){
-        double wheelRPM = falconToRPM(velocitycounts, Swerve.driveGearRatio);
-        double wheelMPS = (wheelRPM * Swerve.wheelCircumference) / 60;
+        double wheelRPM = falconToRPM(velocitycounts, SwerveConstants.driveGearRatio);
+        double wheelMPS = (wheelRPM * SwerveConstants.wheelCircumference) / 60;
         return wheelMPS;
     }
 
@@ -99,8 +99,8 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double MPSToFalcon(double velocity){
-        double wheelRPM = ((velocity * 60) / Swerve.wheelCircumference);
-        double wheelVelocity = RPMToFalcon(wheelRPM, Swerve.driveGearRatio);
+        double wheelRPM = ((velocity * 60) / SwerveConstants.wheelCircumference);
+        double wheelVelocity = RPMToFalcon(wheelRPM, SwerveConstants.driveGearRatio);
         return wheelVelocity;
     }
 
@@ -110,7 +110,7 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double falconToMeters(double positionCounts){
-        return positionCounts * (Swerve.wheelCircumference / (Swerve.driveGearRatio * 2048.0));
+        return positionCounts * (SwerveConstants.wheelCircumference / (SwerveConstants.driveGearRatio * 2048.0));
     }
 
     /**
@@ -119,6 +119,6 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double MetersToFalcon(double meters){
-        return meters / (Swerve.wheelCircumference / (Swerve.driveGearRatio* 2048.0));
+        return meters / (SwerveConstants.wheelCircumference / (SwerveConstants.driveGearRatio* 2048.0));
     }
 }
