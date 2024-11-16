@@ -121,8 +121,6 @@ public class SwerveModule {
         swerveAngleFXConfig.Slot0.kP = SwerveConstants.angleKP;
         swerveAngleFXConfig.Slot0.kI = SwerveConstants.angleKI;
         swerveAngleFXConfig.Slot0.kD = SwerveConstants.angleKD;
-        //swerveAngleFXConfig.Slot0.kS = angleKS;
-        //swerveAngleFXConfig.Slot0.kV = angleKV;
         swerveAngleFXConfig.CurrentLimits = angleSupplyLimit;
         swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;;
         
@@ -157,8 +155,7 @@ public class SwerveModule {
         swerveDriveFXConfig.Slot0.kD = SwerveConstants.driveKD;
         swerveDriveFXConfig.Slot0.kS = SwerveConstants.driveKS;
         swerveDriveFXConfig.Slot0.kV = SwerveConstants.driveKV;
-        swerveDriveFXConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = SwerveConstants.openLoopRamp;
-        swerveDriveFXConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = SwerveConstants.closedLoopRamp;
+        swerveDriveFXConfig.Slot0.kA = SwerveConstants.driveKA;
         swerveDriveFXConfig.CurrentLimits = driveSupplyLimit;
 
         TalonFXConfigurator configurator = mDriveMotor.getConfigurator();

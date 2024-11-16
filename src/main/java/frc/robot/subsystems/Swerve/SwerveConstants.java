@@ -15,6 +15,7 @@ public final class SwerveConstants {
     public static final double trackWidth = Units.inchesToMeters(21.5); //TODO: This must be tuned to specific robot
     public static final double wheelBase = Units.inchesToMeters(26.75); //TODO: This must be tuned to specific robot
     public static final double wheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
+    public static final int maxDriveMotorRPM =6000;//6000 for kraken, 5200 for falcon
 
     /* Swerve Kinematics 
         * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
@@ -26,7 +27,7 @@ public final class SwerveConstants {
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = (6.75 / 1.0); // 5.14:1
-    public static final double angleGearRatio = (150/7 / 1.0); // 12.8:1
+    public static final double angleGearRatio = (150/7 / 1.0); // 12.8:1 //TODO double check this value, 21 seems wrong
 
     /* Motor Inverts */
     public static final boolean angleMotorInvert = true;
@@ -54,14 +55,13 @@ public final class SwerveConstants {
 
     /* Drive Motor Characterization Values 
         * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
-    public static final double driveKS = (0.32 / 12); //TODO: This must be tuned to specific robot
-    public static final double driveKV = (1.51 / 12);
-    public static final double driveKA = (0.27 / 12);
+    public static final double driveKS = (0); //TODO: This must be tuned to specific robot
+    public static final double driveKV = (12/maxDriveMotorRPM*60);//0.12 in all docs units are Volts per revolution per second
+    public static final double driveKA = (0.27 / 12); //TODO: This is final robot weight dependant 
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    //public static final double maxSpeed = 5.0; //TODO: This must be tuned to specific robot
-    public static final double maxWheelSpeed = 5200/driveGearRatio/60*wheelCircumference;//rpm/gear ratio*circumference/60rps
+    public static final double maxWheelSpeed = maxDriveMotorRPM/driveGearRatio/60*wheelCircumference;//rpm/gear ratio*circumference/60rps
     /** Radians per Second */
     public static final double maxAngularVelocity = 10.0;// Radians per second //TODO: This must be tuned to specific robot
 
