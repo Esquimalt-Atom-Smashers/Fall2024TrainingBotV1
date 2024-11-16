@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -37,12 +38,22 @@ public class exampleAuto extends SequentialCommandGroup {
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(3, 0, new Rotation2d(0)),
                 config);
-
-        var thetaController =
+                
+        var thetaController = 
             new ProfiledPIDController(
-                Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
+                Constants.Auto.kPThetaController, 
+                0, 0,
+                new TrapezoidProfile.Constraints(
+                    Constants.Auto.kMaxAngularSpeedRadiansPerSecond, 
+                    Constants.Auto.kMaxAngularAccelerationRadiansPerSecondSquared)
+            );
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
+        /*TODO: Swerve controller command finishes whenever the predicted trajectory time elapses
+         If the robot was slower than predicted, it won't get all the way to the desired position.
+         It also does not zero the drive voltages at the end of a path, but it will default back 
+         to the drive command, which would stop it.
+        */
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,
