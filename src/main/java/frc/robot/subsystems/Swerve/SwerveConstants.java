@@ -37,11 +37,13 @@ public final class SwerveConstants {
     public static final SensorDirectionValue canCoderInvert = SensorDirectionValue.Clockwise_Positive;
 
     /* Swerve Current Limiting */
-    public static final int angleContinuousCurrentLimit = 2;
-    public static final boolean angleEnableCurrentLimit = true;
+    public static final int angleSupplyCurrentLimit = 20;
+    public static final int angleStatorCurrentLimit = 5;
+    public static final boolean angleEnableCurrentLimits = true;
 
-    public static final int driveContinuousCurrentLimit = 5;
-    public static final boolean driveEnableCurrentLimit = true;
+    public static final int driveSupplyCurrentLimit = 20;
+    public static final int driveStatorCurrentLimit = 5;
+    public static final boolean driveEnableCurrentLimits = true;
 
     /* Angle Motor PID Values */
     public static final double angleKP = 45; // 43

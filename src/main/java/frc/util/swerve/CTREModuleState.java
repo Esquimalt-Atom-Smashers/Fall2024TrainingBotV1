@@ -14,6 +14,7 @@ public class CTREModuleState {
    * @param currentAngle The current module angle.
    */
   public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
+    //TODO check if this is why some wheels appeared to be oriented the opposite way during testing
     double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
     double targetSpeed = desiredState.speedMetersPerSecond;
     double delta = targetAngle - currentAngle.getDegrees();

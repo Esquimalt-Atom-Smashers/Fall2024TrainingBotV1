@@ -94,7 +94,7 @@ public class SwerveModule {
         return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition().refresh().getValue());
     }
 
-    public void resetToAbsolute(){
+    public void resetToAbsolute(){//TODO find out if we need to do this since we are using the canCoder as a Remote encoder
         double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.angleGearRatio);
         mAngleMotor.setPosition(absolutePosition);
     }
@@ -112,16 +112,18 @@ public class SwerveModule {
     }
 
     private void  configAngleMotor() {
-        CurrentLimitsConfigs angleSupplyLimit = new CurrentLimitsConfigs();
-        angleSupplyLimit.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimit;
-        angleSupplyLimit.SupplyCurrentLimit = SwerveConstants.angleContinuousCurrentLimit;
-        angleSupplyLimit.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        CurrentLimitsConfigs angleCurrentLimits = new CurrentLimitsConfigs();
+        angleCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimits;
+        angleCurrentLimits.SupplyCurrentLimit = SwerveConstants.angleSupplyCurrentLimit;
+        angleCurrentLimits.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        angleCurrentLimits.StatorCurrentLimitEnable =SwerveConstants.angleEnableCurrentLimits;
+        angleCurrentLimits.StatorCurrentLimit=SwerveConstants.angleStatorCurrentLimit;
         
         TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
         swerveAngleFXConfig.Slot0.kP = SwerveConstants.angleKP;
         swerveAngleFXConfig.Slot0.kI = SwerveConstants.angleKI;
         swerveAngleFXConfig.Slot0.kD = SwerveConstants.angleKD;
-        swerveAngleFXConfig.CurrentLimits = angleSupplyLimit;
+        swerveAngleFXConfig.CurrentLimits = angleCurrentLimits;
         swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;;
         
         TalonFXConfigurator configurator = mAngleMotor.getConfigurator();
@@ -136,18 +138,20 @@ public class SwerveModule {
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
-        feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
+        feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;//fused cancoder is pro only
+        //feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
     }
 
     private void configDriveMotor(){  
         
         /* Swerve Drive Motor Configuration */
-        CurrentLimitsConfigs driveSupplyLimit = new CurrentLimitsConfigs();
-        driveSupplyLimit.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimit;
-        driveSupplyLimit.SupplyCurrentLimit = SwerveConstants.driveContinuousCurrentLimit;
-        driveSupplyLimit.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        CurrentLimitsConfigs driveCurrentLimits = new CurrentLimitsConfigs();
+        driveCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimits;
+        driveCurrentLimits.SupplyCurrentLimit = SwerveConstants.driveSupplyCurrentLimit;
+        driveCurrentLimits.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
+        driveCurrentLimits.StatorCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimits;
+        driveCurrentLimits.StatorCurrentLimit=SwerveConstants.driveStatorCurrentLimit;
         TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
 
         swerveDriveFXConfig.Slot0.kP = SwerveConstants.driveKP;
@@ -156,7 +160,7 @@ public class SwerveModule {
         swerveDriveFXConfig.Slot0.kS = SwerveConstants.driveKS;
         swerveDriveFXConfig.Slot0.kV = SwerveConstants.driveKV;
         swerveDriveFXConfig.Slot0.kA = SwerveConstants.driveKA;
-        swerveDriveFXConfig.CurrentLimits = driveSupplyLimit;
+        swerveDriveFXConfig.CurrentLimits = driveCurrentLimits;
 
         TalonFXConfigurator configurator = mDriveMotor.getConfigurator();
         configurator.apply(swerveDriveFXConfig);
@@ -175,7 +179,10 @@ public class SwerveModule {
 
     public SwerveModulePosition getPosition(){
         return new SwerveModulePosition(
-            SwerveConversions.falconToMeters(mDriveMotor.getPosition().refresh().getValue()), 
+            SwerveConversions.falconToMeters(mDriveMotor.getPosition().refresh().getValue()),
+            //TODO Add a correction factor for coupling between the azimuth and drive gears. 
+            // every time azimuth spins, it affects the real position of the drive wheel, and 
+            //therefore affects odometry.
             getAngle()
         );
     }
