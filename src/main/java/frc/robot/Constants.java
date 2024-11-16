@@ -4,9 +4,9 @@ public final class Constants {
     
     public static final class Teleop {
         public static final double stickDeadband = 0.1;
-        public static final double kMaxSpeedMetersPerSecond = 0.2;
+        public static final double kMaxSpeedMetersPerSecond = 1.0;
         public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;
-        public static final double kMaxAngularSpeedRadiansPerSecond = 0.2*Math.PI;
+        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
 
