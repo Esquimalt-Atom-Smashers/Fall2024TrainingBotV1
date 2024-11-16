@@ -42,11 +42,6 @@ public final class SwerveConstants {
     public static final int driveContinuousCurrentLimit = 5;
     public static final boolean driveEnableCurrentLimit = true;
 
-    /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
-        * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
-    public static final double openLoopRamp = 0.0;//0.25;
-    public static final double closedLoopRamp = 0.0;
-
     /* Angle Motor PID Values */
     public static final double angleKP = 45; // 43
     public static final double angleKI = 0.0;
@@ -71,7 +66,7 @@ public final class SwerveConstants {
     public static final double maxAngularVelocity = 10.0;// Radians per second //TODO: This must be tuned to specific robot
 
     /* Neutral Modes */
-    public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;//TODO: check if the wheel can turn by hand in angle
     public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
     /* Module Specific Constants */
