@@ -40,8 +40,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, gyro.getRotation2d(), getModulePositions());
     }
-
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    //Modified to only run in Closed loop. I don't know why we were running in open loop.
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates =
         SwerveConstants.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(

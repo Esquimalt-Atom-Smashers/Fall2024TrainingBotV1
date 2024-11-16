@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Swerve;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -38,8 +37,6 @@ public class SwerveModule {
     private VelocityVoltage velocityVoltageRequestDrive = new VelocityVoltage(0).withSlot(0);
     private VoltageOut voltageRequestDrive = new VoltageOut(0);
     
-    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(SwerveConstants.driveKS, SwerveConstants.driveKV, SwerveConstants.driveKA);
-
     protected SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
@@ -73,8 +70,8 @@ public class SwerveModule {
         }
         else {
             double velocity = SwerveConversions.MPSToFalcon(desiredState.speedMetersPerSecond);
-            mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocity)
-                .withFeedForward(driveFeedforward.calculate(desiredState.speedMetersPerSecond)));    
+            mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocity)); 
+            //removed the feedforward part because I don't think it was being used right.    
         }
     }
 
