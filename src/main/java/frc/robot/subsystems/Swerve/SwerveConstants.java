@@ -42,7 +42,7 @@ public final class SwerveConstants {
     public static final boolean angleEnableCurrentLimits = true;
 
     public static final int driveSupplyCurrentLimit = 20;
-    public static final int driveStatorCurrentLimit = 5;
+    public static final int driveStatorCurrentLimit = 10;
     public static final boolean driveEnableCurrentLimits = true;
 
     /* Angle Motor PID Values */
@@ -52,13 +52,13 @@ public final class SwerveConstants {
 
     /* Drive Motor PID Values */
     public static final double driveKP = 0.2;
-    public static final double driveKI = 0.0;
-    public static final double driveKD = 0.0;
+    public static final double driveKI = 0.0;//Don't use, KI value spools up too much
+    public static final double driveKD = 0.01;
 
     /* Drive Motor Characterization Values 
         * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
-    public static final double driveKS = (0); //TODO: This must be tuned to specific robot
-    public static final double driveKV = (12/maxDriveMotorRPM*60);//0.12 in all docs units are Volts per revolution per second
+    public static final double driveKS = (0.4); //TODO: This must be tuned to specific robot
+    public static final double driveKV = (12.7/maxDriveMotorRPM*60);//0.12 in all docs units are Volts per revolution per second
     public static final double driveKA = 0;//(0.27 / 12); //TODO: This is final robot weight dependant 
 
     /* Swerve Profiling Values */
