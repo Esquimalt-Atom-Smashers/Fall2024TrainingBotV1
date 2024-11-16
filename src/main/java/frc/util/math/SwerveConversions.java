@@ -52,16 +52,16 @@ public class SwerveConversions {
         return mechRPM;
     }
 
-    /**
-     * @param RPM RPM of mechanism
-     * @param gearRatio Gear Ratio between Falcon and Mechanism (set to 1 for Falcon RPM)
-     * @return RPM of Mechanism
-     */
-    public static double RPMToFalcon(double RPM, double gearRatio) {
-        double motorRPM = RPM * gearRatio;
-        double sensorCounts = motorRPM * (2048.0 / 600.0);
-        return sensorCounts;
-    }
+    // /**
+    //  * @param RPM RPM of mechanism
+    //  * @param gearRatio Gear Ratio between Falcon and Mechanism (set to 1 for Falcon RPM)
+    //  * @return RPM of Mechanism
+    //  */
+    // public static double RPMToFalcon(double RPM, double gearRatio) {
+    //     double motorRPM = RPM * gearRatio;
+    //     double sensorCounts = motorRPM * (2048.0 / 600.0);
+    //     return sensorCounts;
+    // }
 
     /**
      * @param RPS Rotations per Second for the Motor
@@ -94,14 +94,14 @@ public class SwerveConversions {
     }
 
     /**
-     * @param velocity Velocity MPS
+     * @param velocityMPS Velocity MPS
      * @return Falcon Velocity Counts
      */
     //edited by brandon
-    public static double MPSToFalcon(double velocity){
-        double wheelRPM = ((velocity * 60) / SwerveConstants.wheelCircumference);
-        double wheelVelocity = RPMToFalcon(wheelRPM, SwerveConstants.driveGearRatio);
-        return wheelVelocity;
+    public static double MPSToKraken(double velocityMPS){
+        double wheelRPM = ((velocityMPS * 60) / SwerveConstants.wheelCircumference);
+        double motorVelocityRPS = wheelRPM*SwerveConstants.driveGearRatio/60;
+        return motorVelocityRPS;
     }
 
     /**

@@ -15,6 +15,7 @@ public class CTREModuleState {
    */
   public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
     //TODO check if this is why some wheels appeared to be oriented the opposite way during testing
+    //TODO add boolean to make motors go to same orientation on startup may not work with static method
     double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
     double targetSpeed = desiredState.speedMetersPerSecond;
     double delta = targetAngle - currentAngle.getDegrees();

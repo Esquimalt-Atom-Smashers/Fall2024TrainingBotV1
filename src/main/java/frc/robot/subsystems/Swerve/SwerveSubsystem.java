@@ -26,10 +26,10 @@ public class SwerveSubsystem extends SubsystemBase {
         gyro.ahrsInit();
 
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule(0, SwerveConstants.Mod0.constants),
-            new SwerveModule(1, SwerveConstants.Mod1.constants),
-            new SwerveModule(2, SwerveConstants.Mod2.constants),
-            new SwerveModule(3, SwerveConstants.Mod3.constants)
+            new SwerveModule(0, SwerveConstants.frontRightModule.constants),//FR
+            new SwerveModule(1, SwerveConstants.rearRightModule.constants),//RR
+            new SwerveModule(2, SwerveConstants.rearLeftModule.constants),//RL
+            new SwerveModule(3, SwerveConstants.frontLeftModule.constants)//FL
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.

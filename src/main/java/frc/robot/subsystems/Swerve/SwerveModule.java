@@ -65,12 +65,12 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
-            double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxWheelSpeed;
-            mDriveMotor.setControl(voltageRequestDrive.withOutput(voltageOutput));
+            //double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxWheelSpeed;
+            //mDriveMotor.setControl(voltageRequestDrive.withOutput(voltageOutput));
         }
         else {
-            double velocity = SwerveConversions.MPSToFalcon(desiredState.speedMetersPerSecond);
-            mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocity)); 
+            double velocityMotorRPS = SwerveConversions.MPSToKraken(desiredState.speedMetersPerSecond);
+            mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocityMotorRPS)); 
             //removed the feedforward part because I don't think it was being used right.    
         }
     }

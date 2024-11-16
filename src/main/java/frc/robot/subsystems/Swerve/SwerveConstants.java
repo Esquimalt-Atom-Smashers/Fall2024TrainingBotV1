@@ -12,18 +12,18 @@ public final class SwerveConstants {
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
     /* Drivetrain Constants */
-    public static final double trackWidth = Units.inchesToMeters(21.5); //TODO: This must be tuned to specific robot
-    public static final double wheelBase = Units.inchesToMeters(26.75); //TODO: This must be tuned to specific robot
+    public static final double trackWidth = Units.inchesToMeters(20.6); // This must be tuned to specific robot
+    public static final double wheelBase = Units.inchesToMeters(25.5); // This must be tuned to specific robot
     public static final double wheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
     public static final int maxDriveMotorRPM =6000;//6000 for kraken, 5200 for falcon
 
     /* Swerve Kinematics 
         * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),//fR
+        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),//RR
+        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0),//RL
+        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0));//FL
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = (6.75 / 1.0); // 5.14:1
@@ -59,7 +59,7 @@ public final class SwerveConstants {
         * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
     public static final double driveKS = (0); //TODO: This must be tuned to specific robot
     public static final double driveKV = (12/maxDriveMotorRPM*60);//0.12 in all docs units are Volts per revolution per second
-    public static final double driveKA = (0.27 / 12); //TODO: This is final robot weight dependant 
+    public static final double driveKA = 0;//(0.27 / 12); //TODO: This is final robot weight dependant 
 
     /* Swerve Profiling Values */
     /** Meters per Second */
@@ -73,7 +73,7 @@ public final class SwerveConstants {
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
-    public static final class Mod0 { //TODO: This must be tuned to specific robot
+    public static final class frontLeftModule { //TODO: This must be tuned to specific robot
         public static final SwerveModuleConstants constants = 
             new SwerveModuleConstants(
                 40,
@@ -84,7 +84,7 @@ public final class SwerveConstants {
     }
 
     /* Front Right Module - Module 1 */
-    public static final class Mod1 { //TODO: This must be tuned to specific robot
+    public static final class frontRightModule { //TODO: This must be tuned to specific robot
         public static final SwerveModuleConstants constants = 
             new SwerveModuleConstants(
                 10,
@@ -95,7 +95,7 @@ public final class SwerveConstants {
     }
     
     /* Back Left Module - Module 2 */
-    public static final class Mod2 { //TODO: This must be tuned to specific robot
+    public static final class rearLeftModule { //TODO: This must be tuned to specific robot
         public static final SwerveModuleConstants constants = 
             new SwerveModuleConstants(
                 30,
@@ -106,7 +106,7 @@ public final class SwerveConstants {
     }
 
     /* Back Right Module - Module 3 */
-    public static final class Mod3 { //TODO: This must be tuned to specific robot
+    public static final class rearRightModule { //TODO: This must be tuned to specific robot
         public static final SwerveModuleConstants constants = 
             new SwerveModuleConstants(
                 20,

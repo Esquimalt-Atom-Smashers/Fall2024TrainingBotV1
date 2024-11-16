@@ -25,7 +25,7 @@ public class RobotContainer {
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = 2;
+    private final int rotationAxis = 4;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -41,7 +41,7 @@ public class RobotContainer {
             new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
+                () -> driver.getRawAxis(strafeAxis), 
                 () -> -driver.getRawAxis(rotationAxis), 
                 () -> robotCentric.getAsBoolean()
             )
