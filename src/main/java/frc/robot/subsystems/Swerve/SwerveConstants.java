@@ -38,11 +38,11 @@ public final class SwerveConstants {
 
     /* Swerve Current Limiting */
     public static final int angleSupplyCurrentLimit = 20;
-    public static final int angleStatorCurrentLimit = 5;
+    public static final int angleStatorCurrentLimit = 8;
     public static final boolean angleEnableCurrentLimits = true;
 
-    public static final int driveSupplyCurrentLimit = 20;
-    public static final int driveStatorCurrentLimit = 10;
+    public static final int driveSupplyCurrentLimit = 40;
+    public static final int driveStatorCurrentLimit = 20;
     public static final boolean driveEnableCurrentLimits = true;
 
     /* Angle Motor PID Values */
