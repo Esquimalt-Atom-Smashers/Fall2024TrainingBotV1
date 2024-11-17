@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.util.math.SwerveConversions;
-import frc.util.swerve.CTREModuleState;
 import frc.util.swerve.SwerveModuleConstants;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -17,7 +16,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
+//import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -35,7 +34,30 @@ public class SwerveModule {
 
     private PositionVoltage positionVoltageRequestAngle = new PositionVoltage(0).withSlot(0);
     private VelocityVoltage velocityVoltageRequestDrive = new VelocityVoltage(0).withSlot(0);
-    private VoltageOut voltageRequestDrive = new VoltageOut(0);
+    //private VoltageOut voltageRequestDrive = new VoltageOut(0);
+
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(getSpeed(),getAngle()); 
+    }
+
+    public SwerveModulePosition getPosition(){
+        return new SwerveModulePosition(
+            SwerveConversions.falconToMeters(mDriveMotor.getPosition().refresh().getValue()),
+            //TODO Add a correction factor for coupling between the azimuth and drive gears. 
+            // every time azimuth spins, it affects the real position of the drive wheel, and 
+            //therefore affects odometry.
+            getAngle()
+        );
+    }
+
+    public Rotation2d getCanCoder(){
+        return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition().refresh().getValue());
+    }
+
+    public void resetToAbsolute(){//TODO find out if we need to do this since we are using the canCoder as a Remote encoder
+        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.angleGearRatio);
+        mAngleMotor.setPosition(absolutePosition);
+    }
     
     protected SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
@@ -58,7 +80,7 @@ public class SwerveModule {
 
     protected void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
         /* This is a custom optimize function, since default WPILib optimize assumes continuous controller which CTRE and Rev onboard is not */
-        desiredState = CTREModuleState.optimize(desiredState, getState().angle); 
+        desiredState = optimize(desiredState, getState().angle); 
         setAngle(desiredState);
         setSpeed(desiredState, isOpenLoop);
     }
@@ -88,15 +110,6 @@ public class SwerveModule {
     }
     private double getSpeed() {
         return SwerveConversions.falconToMPS(mDriveMotor.getVelocity().refresh().getValue());
-    }
-
-    public Rotation2d getCanCoder(){
-        return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition().refresh().getValue());
-    }
-
-    public void resetToAbsolute(){//TODO find out if we need to do this since we are using the canCoder as a Remote encoder
-        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.angleGearRatio);
-        mAngleMotor.setPosition(absolutePosition);
     }
 
     private void configAngleEncoder(){   
@@ -173,17 +186,56 @@ public class SwerveModule {
         configurator.apply(outputConfigs);
     }
 
-    public SwerveModuleState getState(){
-        return new SwerveModuleState(getSpeed(),getAngle()); 
-    }
 
-    public SwerveModulePosition getPosition(){
-        return new SwerveModulePosition(
-            SwerveConversions.falconToMeters(mDriveMotor.getPosition().refresh().getValue()),
-            //TODO Add a correction factor for coupling between the azimuth and drive gears. 
-            // every time azimuth spins, it affects the real position of the drive wheel, and 
-            //therefore affects odometry.
-            getAngle()
-        );
-    }
+
+    /**
+   * Minimize the change in heading the desired swerve module state would require by potentially
+   * reversing the direction the wheel spins. Customized from WPILib's version to include placing
+   * in appropriate scope for CTRE onboard control.
+   *
+   * @param desiredState The desired state.
+   * @param currentAngle The current module angle.
+   */
+  private static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
+    //TODO check if this is why some wheels appeared to be oriented the opposite way during testing
+    //TODO add boolean to make motors go to same orientation on startup may not work with static method
+    double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
+    double targetSpeed = desiredState.speedMetersPerSecond;
+    double delta = targetAngle - currentAngle.getDegrees();
+    if (Math.abs(delta) > 90){
+        targetSpeed = -targetSpeed;
+        targetAngle = delta > 90 ? (targetAngle -= 180) : (targetAngle += 180);
+    }        
+    return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
+  }
+
+  /**
+     * @param scopeReference Current Angle
+     * @param newAngle Target Angle
+     * @return Closest angle within scope
+     */
+    private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
+      double lowerBound;
+      double upperBound;
+      double lowerOffset = scopeReference % 360;
+      if (lowerOffset >= 0) {
+          lowerBound = scopeReference - lowerOffset;
+          upperBound = scopeReference + (360 - lowerOffset);
+      } else {
+          upperBound = scopeReference - lowerOffset;
+          lowerBound = scopeReference - (360 + lowerOffset);
+      }
+      while (newAngle < lowerBound) {
+          newAngle += 360;
+      }
+      while (newAngle > upperBound) {
+          newAngle -= 360;
+      }
+      if (newAngle - scopeReference > 180) {
+          newAngle -= 360;
+      } else if (newAngle - scopeReference < -180) {
+          newAngle += 360;
+      }
+      return newAngle;
+  }
 }
