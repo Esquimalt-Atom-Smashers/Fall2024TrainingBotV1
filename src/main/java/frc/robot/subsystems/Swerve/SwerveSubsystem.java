@@ -66,17 +66,11 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStates(swerveModuleStates);
     }    
 
-    /* Used by SwerveControllerCommand in Auto */
+    /* Sets the states of each module using a closed loop motor velocity and angular position*/
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxWheelSpeed);
-        
-        // for(SwerveModule mod : mSwerveMods){
-        //     mod.setDesiredState(desiredStates[mod.moduleNumber], false);
-        // } 
-        //this approach removes the risk that a swerve module can be assigned a differnt desired state than 
-        //the one associated with its position in the array. It is also less likely to cause confusion wiht Canbus IDs
         for (int i = 0; i < mSwerveMods.length; i++) {
-            mSwerveMods[i].setDesiredState(desiredStates[i], false);
+            mSwerveMods[i].setDesiredState(desiredStates[i]);
         }
     }    
 

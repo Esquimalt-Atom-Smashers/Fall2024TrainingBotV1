@@ -3,8 +3,6 @@ package frc.robot.subsystems.Swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.util.math.SwerveConversions;
-import frc.util.swerve.SwerveModuleConstants;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -16,7 +14,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-//import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -24,7 +21,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
 public class SwerveModule {
-    // public int moduleNumber; Removed Because it is not necessary for the swerce module to know its position in an array.
     public String modulePosition;
     private Rotation2d angleOffset;
     private Rotation2d lastAngle;
@@ -35,8 +31,7 @@ public class SwerveModule {
 
     private PositionVoltage positionVoltageRequestAngle = new PositionVoltage(0).withSlot(0);
     private VelocityVoltage velocityVoltageRequestDrive = new VelocityVoltage(0).withSlot(0);
-    //private VoltageOut voltageRequestDrive = new VoltageOut(0);
-
+    
     public SwerveModuleState getState(){
         return new SwerveModuleState(getSpeed(),getAngle()); 
     }
@@ -61,7 +56,6 @@ public class SwerveModule {
     }
     
     protected SwerveModule(String modulePosition, SwerveModuleConstants moduleConstants){
-        //this.moduleNumber = moduleNumber; removed to reduce risk of modules being in incorrect positions
         this.modulePosition= modulePosition;
         this.angleOffset = moduleConstants.angleOffset;
         
@@ -80,23 +74,16 @@ public class SwerveModule {
         lastAngle = getState().angle;
     }
 
-    protected void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
+    protected void setDesiredState(SwerveModuleState desiredState){
         /* This is a custom optimize function, since default WPILib optimize assumes continuous controller which CTRE and Rev onboard is not */
         desiredState = optimize(desiredState, getState().angle); 
         setAngle(desiredState);
-        setSpeed(desiredState, isOpenLoop);
+        setSpeed(desiredState);
     }
 
-    private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
-        if(isOpenLoop){
-            //double voltageOutput = 12*desiredState.speedMetersPerSecond / SwerveConstants.maxWheelSpeed;
-            //mDriveMotor.setControl(voltageRequestDrive.withOutput(voltageOutput));
-        }
-        else {
-            double velocityMotorRPS = SwerveConversions.MPSToKraken(desiredState.speedMetersPerSecond);
-            mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocityMotorRPS)); 
-            //removed the feedforward part because I don't think it was being used right.    
-        }
+    private void setSpeed(SwerveModuleState desiredState){
+        double velocityMotorRPS = SwerveConversions.MPSToKraken(desiredState.speedMetersPerSecond);
+        mDriveMotor.setControl(velocityVoltageRequestDrive.withVelocity(velocityMotorRPS)); 
     }
 
     //TODO go over this to make sure the angle makes sense
@@ -154,7 +141,6 @@ public class SwerveModule {
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;//fused cancoder is pro only
-        //feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
     }
 

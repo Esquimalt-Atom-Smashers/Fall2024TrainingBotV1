@@ -2,11 +2,7 @@ package frc.robot.subsystems.Swerve;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc.util.swerve.SwerveModuleConstants;
 
 public final class SwerveConstants {
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -16,8 +12,6 @@ public final class SwerveConstants {
     public static final double wheelBase = Units.inchesToMeters(25.5); // This must be tuned to specific robot
     public static final double wheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
     public static final int maxDriveMotorRPM =6000;//6000 for kraken, 5200 for falcon
-
-    
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = (6.75 / 1.0); // 5.14:1

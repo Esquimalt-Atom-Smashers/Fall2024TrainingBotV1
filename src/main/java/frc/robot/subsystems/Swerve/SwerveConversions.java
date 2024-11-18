@@ -1,5 +1,4 @@
-package frc.util.math;
-import frc.robot.subsystems.Swerve.SwerveConstants;
+package frc.robot.subsystems.Swerve;
 
 public class SwerveConversions {
 
@@ -20,8 +19,6 @@ public class SwerveConversions {
     public static double degreesToCANcoder(double degrees, double gearRatio) {
         return degrees / (360.0 / (gearRatio * 4096.0));
     }
-
-
 
     /**
      * @param counts Falcon Position Counts
@@ -51,17 +48,6 @@ public class SwerveConversions {
         double mechRPM = motorRPM / gearRatio;
         return mechRPM;
     }
-
-    // /**
-    //  * @param RPM RPM of mechanism
-    //  * @param gearRatio Gear Ratio between Falcon and Mechanism (set to 1 for Falcon RPM)
-    //  * @return RPM of Mechanism
-    //  */
-    // public static double RPMToFalcon(double RPM, double gearRatio) {
-    //     double motorRPM = RPM * gearRatio;
-    //     double sensorCounts = motorRPM * (2048.0 / 600.0);
-    //     return sensorCounts;
-    // }
 
     /**
      * @param RPS Rotations per Second for the Motor
