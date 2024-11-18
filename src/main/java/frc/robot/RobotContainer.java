@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 //import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -8,8 +9,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.Controllers.xBoxBrandon;
 //import frc.robot.autos.*;
-import frc.robot.commands.*;
+//import frc.robot.commands.*;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.Swerve.SwerveCommands.SwerveDriveMPSCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,14 +39,25 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        // s_Swerve.setDefaultCommand(
+        //     new TeleopSwerve(
+        //         s_Swerve, 
+        //         () -> -driver.getRawAxis(translationAxis)*(0.5+driver.getRawAxis(3)/2), 
+        //         () -> driver.getRawAxis(strafeAxis), 
+        //         () -> driver.getRawAxis(rotationAxis), 
+        //         () -> robotCentric.getAsBoolean()
+        //     )
+        // );
         s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis)*(0.5+driver.getRawAxis(3)/2), 
-                () -> driver.getRawAxis(strafeAxis), 
-                () -> driver.getRawAxis(rotationAxis), 
+            new SwerveDriveMPSCommand(
+                s_Swerve,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(translationAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxSpeedMPS,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(strafeAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxSpeedMPS,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(rotationAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxAngSpeedRadPerS,
                 () -> robotCentric.getAsBoolean()
+               
             )
+            
         );
 
         //Configure the button bindings
