@@ -24,7 +24,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
 public class SwerveModule {
-    public int moduleNumber;
+    // public int moduleNumber; Removed Because it is not necessary for the swerce module to know its position in an array.
+    public String modulePosition;
     private Rotation2d angleOffset;
     private Rotation2d lastAngle;
 
@@ -59,8 +60,9 @@ public class SwerveModule {
         mAngleMotor.setPosition(absolutePosition);
     }
     
-    protected SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
-        this.moduleNumber = moduleNumber;
+    protected SwerveModule(String modulePosition, SwerveModuleConstants moduleConstants){
+        //this.moduleNumber = moduleNumber; removed to reduce risk of modules being in incorrect positions
+        this.modulePosition= modulePosition;
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */

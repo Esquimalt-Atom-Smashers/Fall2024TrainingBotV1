@@ -20,16 +20,24 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     private SwerveModule[] mSwerveMods;
     public NavXSubsystem gyro;
+    //this SwerveDrive kinematics needs to be created in the same order as the  array for the swerve modules
+    //below This is why it has been moved to this class instead of the swerveconstants class. 
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
+            new Translation2d(SwerveConstants.wheelBase / 2.0, SwerveConstants.trackWidth / 2.0),//fR
+            new Translation2d(-SwerveConstants.wheelBase / 2.0, SwerveConstants.trackWidth / 2.0),//RR
+            new Translation2d(-SwerveConstants.wheelBase / 2.0, -SwerveConstants.trackWidth / 2.0),//RL
+            new Translation2d(SwerveConstants.wheelBase / 2.0, -SwerveConstants.trackWidth / 2.0));//FL
+
 
     public SwerveSubsystem() {
         gyro = new NavXSubsystem();
         gyro.ahrsInit();
 
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule(0, SwerveConstants.frontRightModule.constants),//FR
-            new SwerveModule(1, SwerveConstants.rearRightModule.constants),//RR
-            new SwerveModule(2, SwerveConstants.rearLeftModule.constants),//RL
-            new SwerveModule(3, SwerveConstants.frontLeftModule.constants)//FL
+            new SwerveModule( "FR", SwerveConstants.frontRightModule.constants),//FR
+            new SwerveModule( "RR", SwerveConstants.rearRightModule.constants),//RR
+            new SwerveModule( "RL", SwerveConstants.rearLeftModule.constants),//RL
+            new SwerveModule( "FL", SwerveConstants.frontLeftModule.constants)//FL
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -38,12 +46,12 @@ public class SwerveSubsystem extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
 
-        swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, gyro.getRotation2d(), getModulePositions());
+        swerveOdometry = new SwerveDriveOdometry(swerveKinematics, gyro.getRotation2d(), getModulePositions());
     }
     //Modified to only run in Closed loop. I don't know why we were running in open loop.
     public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates =
-        SwerveConstants.swerveKinematics.toSwerveModuleStates(
+        swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
@@ -62,8 +70,13 @@ public class SwerveSubsystem extends SubsystemBase {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxWheelSpeed);
         
-        for(SwerveModule mod : mSwerveMods){
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        // for(SwerveModule mod : mSwerveMods){
+        //     mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        // } 
+        //this approach removes the risk that a swerve module can be assigned a differnt desired state than 
+        //the one associated with its position in the array. It is also less likely to cause confusion wiht Canbus IDs
+        for (int i = 0; i < mSwerveMods.length; i++) {
+            mSwerveMods[i].setDesiredState(desiredStates[i], false);
         }
     }    
 
@@ -77,16 +90,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public SwerveModuleState[] getModuleStates(){
         SwerveModuleState[] states = new SwerveModuleState[4];
-        for(SwerveModule mod : mSwerveMods){
-            states[mod.moduleNumber] = mod.getState();
+        for (int i = 0; i < mSwerveMods.length; i++) {
+            states[i] = mSwerveMods[i].getState();
         }
         return states;
     }
 
     public SwerveModulePosition[] getModulePositions(){
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
-        for(SwerveModule mod : mSwerveMods){
-            positions[mod.moduleNumber] = mod.getPosition();
+        for (int i = 0; i < mSwerveMods.length; i++) {
+            positions[i] = mSwerveMods[i].getPosition();
         }
         return positions;
     }
@@ -108,9 +121,9 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdometry.update(gyro.getRotation2d(), getModulePositions());  
 
         for(SwerveModule mod : mSwerveMods){
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+            SmartDashboard.putNumber("Mod " + mod.modulePosition + " Cancoder", mod.getCanCoder().getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.modulePosition + " Position (meters)", mod.getPosition().angle.getDegrees());
+            SmartDashboard.putNumber("Mod " + mod.modulePosition + " Velocity", mod.getState().speedMetersPerSecond);    
         }
     }
 }

@@ -17,13 +17,7 @@ public final class SwerveConstants {
     public static final double wheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
     public static final int maxDriveMotorRPM =6000;//6000 for kraken, 5200 for falcon
 
-    /* Swerve Kinematics 
-        * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
-    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-        new Translation2d(wheelBase / 2.0, trackWidth / 2.0),//fR
-        new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),//RR
-        new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0),//RL
-        new Translation2d(wheelBase / 2.0, -trackWidth / 2.0));//FL
+    
 
     /* Module Gear Ratios */
     public static final double driveGearRatio = (6.75 / 1.0); // 5.14:1

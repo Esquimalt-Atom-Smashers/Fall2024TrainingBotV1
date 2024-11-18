@@ -26,7 +26,7 @@ public class exampleAuto extends SequentialCommandGroup {
                     //Use the lower speed of the set speed or the physical limit for the motor speeds to calculate a trajectory
                     Math.min(Constants.Auto.kMaxSpeedMetersPerSecond,SwerveConstants.maxWheelSpeed),
                     Constants.Auto.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(SwerveConstants.swerveKinematics);
+                .setKinematics(SwerveSubsystem.swerveKinematics);
 
         // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory =
@@ -58,7 +58,7 @@ public class exampleAuto extends SequentialCommandGroup {
             new SwerveControllerCommand(
                 exampleTrajectory,
                 s_Swerve::getPose,
-                SwerveConstants.swerveKinematics,
+                SwerveSubsystem.swerveKinematics,
                 new PIDController(Constants.Auto.kPXController, 0, 0),
                 new PIDController(Constants.Auto.kPYController, 0, 0),
                 thetaController,
