@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.swerve;
 
 public class SwerveConversions {
 
@@ -74,8 +74,8 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double falconToMPS(double velocitycounts){
-        double wheelRPM = falconToRPM(velocitycounts, SwerveConstants.driveGearRatio);
-        double wheelMPS = (wheelRPM * SwerveConstants.wheelCircumference) / 60;
+        double wheelRPM = falconToRPM(velocitycounts, SwerveConstants.GEAR_RATIO_DRIVE);
+        double wheelMPS = (wheelRPM * SwerveConstants.WHEEL_CIRCUMFERENCE) / 60;
         return wheelMPS;
     }
 
@@ -85,8 +85,8 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double MPSToKraken(double velocityMPS){
-        double wheelRPM = ((velocityMPS * 60) / SwerveConstants.wheelCircumference);
-        double motorVelocityRPS = wheelRPM*SwerveConstants.driveGearRatio/60;
+        double wheelRPM = ((velocityMPS * 60) / SwerveConstants.WHEEL_CIRCUMFERENCE);
+        double motorVelocityRPS = wheelRPM*SwerveConstants.GEAR_RATIO_DRIVE/60;
         return motorVelocityRPS;
     }
 
@@ -96,7 +96,7 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double falconToMeters(double positionCounts){
-        return positionCounts * (SwerveConstants.wheelCircumference / (SwerveConstants.driveGearRatio * 2048.0));
+        return positionCounts * (SwerveConstants.WHEEL_CIRCUMFERENCE / (SwerveConstants.GEAR_RATIO_DRIVE * 2048.0));
     }
 
     /**
@@ -105,6 +105,6 @@ public class SwerveConversions {
      */
     //edited by brandon
     public static double MetersToFalcon(double meters){
-        return meters / (SwerveConstants.wheelCircumference / (SwerveConstants.driveGearRatio* 2048.0));
+        return meters / (SwerveConstants.WHEEL_CIRCUMFERENCE / (SwerveConstants.GEAR_RATIO_DRIVE* 2048.0));
     }
 }

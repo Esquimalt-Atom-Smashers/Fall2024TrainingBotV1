@@ -1,8 +1,8 @@
 package frc.robot.autos;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.Swerve.SwerveConstants;
-import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.SwerveConstants;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ public class exampleAuto extends SequentialCommandGroup {
         TrajectoryConfig config =
             new TrajectoryConfig(
                     //Use the lower speed of the set speed or the physical limit for the motor speeds to calculate a trajectory
-                    Math.min(Constants.Auto.kMaxSpeedMetersPerSecond,SwerveConstants.maxWheelSpeed),
-                    Constants.Auto.kMaxAccelerationMetersPerSecondSquared)
+                    Math.min(Constants.Auto.MAX_SPEED_M_S,SwerveConstants.MAX_WHEEL_SPEED_M_S),
+                    Constants.Auto.MAX_ACCEL_M_S2)
                 .setKinematics(SwerveSubsystem.swerveKinematics);
 
         // An example trajectory to follow.  All units in meters.
@@ -41,11 +41,11 @@ public class exampleAuto extends SequentialCommandGroup {
                 
         var thetaController = 
             new ProfiledPIDController(
-                Constants.Auto.kPThetaController, 
+                Constants.Auto.KP_THETA, 
                 0, 0,
                 new TrapezoidProfile.Constraints(
-                    Constants.Auto.kMaxAngularSpeedRadiansPerSecond, 
-                    Constants.Auto.kMaxAngularAccelerationRadiansPerSecondSquared)
+                    Constants.Auto.MAX_ANG_SPEED_RAD_S, 
+                    Constants.Auto.MAX_ANG_ACCEL_RAD_S2)
             );
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -59,8 +59,8 @@ public class exampleAuto extends SequentialCommandGroup {
                 exampleTrajectory,
                 s_Swerve::getPose,
                 SwerveSubsystem.swerveKinematics,
-                new PIDController(Constants.Auto.kPXController, 0, 0),
-                new PIDController(Constants.Auto.kPYController, 0, 0),
+                new PIDController(Constants.Auto.KP_X_AXIS, 0, 0),
+                new PIDController(Constants.Auto.KP_Y_AXIS, 0, 0),
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);

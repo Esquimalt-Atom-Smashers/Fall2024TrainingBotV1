@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.Controllers.xBoxBrandon;
-//import frc.robot.autos.*;
-//import frc.robot.commands.*;
-import frc.robot.subsystems.Swerve.SwerveSubsystem;
-import frc.robot.subsystems.Swerve.SwerveCommands.SwerveDriveMPSCommand;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.swerveCommands.SwerveDriveMPSCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +20,7 @@ import frc.robot.subsystems.Swerve.SwerveCommands.SwerveDriveMPSCommand;
 public class RobotContainer {
     /* Controllers */
     private final XboxController driver = new XboxController(0);
-    static final xBoxBrandon m_PersonalizedController =new xBoxBrandon(1);
+    static final xBoxBrandon personalizedController =new xBoxBrandon(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -34,26 +32,18 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
-    private final SwerveSubsystem s_Swerve = new SwerveSubsystem();
+    private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        // s_Swerve.setDefaultCommand(
-        //     new TeleopSwerve(
-        //         s_Swerve, 
-        //         () -> -driver.getRawAxis(translationAxis)*(0.5+driver.getRawAxis(3)/2), 
-        //         () -> driver.getRawAxis(strafeAxis), 
-        //         () -> driver.getRawAxis(rotationAxis), 
-        //         () -> robotCentric.getAsBoolean()
-        //     )
-        // );
-        s_Swerve.setDefaultCommand(
+        
+        swerveSubsystem.setDefaultCommand(
             new SwerveDriveMPSCommand(
-                s_Swerve,
-                () -> MathUtil.applyDeadband(-driver.getRawAxis(translationAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxSpeedMPS,
-                () -> MathUtil.applyDeadband(-driver.getRawAxis(strafeAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxSpeedMPS,
-                () -> MathUtil.applyDeadband(-driver.getRawAxis(rotationAxis), Constants.Teleop.stickDeadband)*Constants.Teleop.maxAngSpeedRadPerS,
+                swerveSubsystem,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(translationAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_SPEED_M_S,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(strafeAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_SPEED_M_S,
+                () -> MathUtil.applyDeadband(-driver.getRawAxis(rotationAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_ANG_SPEED_RAD_S,
                 () -> robotCentric.getAsBoolean()
                
             )
@@ -72,9 +62,9 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        new JoystickButton(m_PersonalizedController, m_PersonalizedController.zeroGyroButton())
-        .onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        zeroGyro.onTrue(new InstantCommand(() -> swerveSubsystem.zeroGyro()));
+        new JoystickButton(personalizedController, personalizedController.zeroGyroButton())
+            .onTrue(new InstantCommand(() -> swerveSubsystem.zeroGyro()));
     }
 
     /**

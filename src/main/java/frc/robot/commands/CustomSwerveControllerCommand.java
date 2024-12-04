@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -151,14 +152,14 @@ public class CustomSwerveControllerCommand extends Command {
     Transform2d poseDifference = finalPose.minus(currentPose);
 
     // Check if the absolute values of the differences are within the thresholds
-    if (Math.abs(poseDifference.getX()) < 0.1 &&
-        Math.abs(poseDifference.getY()) < 0.1 &&
-        Math.abs(poseDifference.getRotation().getRadians()) < 0.1) {
+    if (Math.abs(poseDifference.getX()) < Constants.Auto.TOLERANCE_XY_METERS &&
+        Math.abs(poseDifference.getY()) < Constants.Auto.TOLERANCE_XY_METERS &&
+        Math.abs(poseDifference.getRotation().getRadians()) < Constants.Auto.TOLERANCE_ROTATION_RAD) {
         reachedDestination = true;
     }
     
 
     //wait three seconds after time has elapsed from the predicted path, unless destination was reached
-    return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds()+3)|reachedDestination;
+    return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds()+Constants.Auto.WAIT_TIME_S)|reachedDestination;
   }
 }

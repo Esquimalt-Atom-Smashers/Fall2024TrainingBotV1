@@ -1,7 +1,6 @@
-package frc.robot.subsystems.Swerve.SwerveCommands;
+package frc.robot.subsystems.swerve.swerveCommands;
 
-import frc.robot.Constants;
-import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -10,15 +9,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 
 public class SwerveDriveMPSCommand extends Command {    
-    private SwerveSubsystem s_Swerve;    
+    private SwerveSubsystem swerveSS;    
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier fieldCentricSup;
 
-    public SwerveDriveMPSCommand(SwerveSubsystem s_Swerve, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier rotationRadPerS, BooleanSupplier fieldCentric) {
-        this.s_Swerve = s_Swerve;
-        addRequirements(s_Swerve);
+    public SwerveDriveMPSCommand(SwerveSubsystem subsystem, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier rotationRadPerS, BooleanSupplier fieldCentric) {
+        this.swerveSS = subsystem;
+        addRequirements(subsystem);
 
         this.translationSup = forward;
         this.strafeSup = strafe;
@@ -34,9 +33,9 @@ public class SwerveDriveMPSCommand extends Command {
         double rotationVal = rotationSup.getAsDouble();
 
         /* Drive */
-        s_Swerve.driveMPS(
+        swerveSS.driveMPS(
             new Translation2d(translationVal, strafeVal), 
-            rotationVal * Constants.Teleop.maxAngSpeedRadPerS, 
+            rotationVal, 
             fieldCentricSup.getAsBoolean()
         );
     }

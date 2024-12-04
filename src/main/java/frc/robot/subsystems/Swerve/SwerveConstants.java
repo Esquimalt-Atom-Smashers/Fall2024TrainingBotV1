@@ -1,68 +1,68 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.util.Units;
 
 public final class SwerveConstants {
-    public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
+    public static final boolean INVERT_GYRO = false; // Always ensure Gyro is CCW+ CW-
 
     /* Drivetrain Constants */
-    public static final double trackWidth = Units.inchesToMeters(20.6); // This must be tuned to specific robot
-    public static final double wheelBase = Units.inchesToMeters(25.5); // This must be tuned to specific robot
-    public static final double wheelCircumference = Units.inchesToMeters(4.0) * Math.PI;
-    public static final int maxDriveMotorRPM =6000;//6000 for kraken, 5200 for falcon
+    public static final double TRACK_WIDTH = Units.inchesToMeters(20.6); // This must be tuned to specific robot
+    public static final double WHEEL_BASE = Units.inchesToMeters(25.5); // This must be tuned to specific robot
+    public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4.0) * Math.PI;
+    public static final int MAX_RPM_DRIVE_MOTOR =6000;//6000 for kraken, 5200 for falcon
 
     /* Module Gear Ratios */
-    public static final double driveGearRatio = (6.75 / 1.0); // 5.14:1
-    public static final double angleGearRatio = (150/7 / 1.0); // 12.8:1 //TODO double check this value, 21 seems wrong
+    public static final double GEAR_RATIO_DRIVE = (6.75 / 1.0); // 5.14:1
+    public static final double GEAR_RATIO_ANGLE = (150/7 / 1.0); // 12.8:1 //TODO double check this value, 21 seems wrong
 
     /* Motor Inverts */
-    public static final boolean angleMotorInvert = true;
-    public static final boolean driveMotorInvert = false;
+    public static final boolean INVERT_ANGLE_MOTOR = true;
+    public static final boolean INVERT_DRIVE_MOTOR = false;
 
     /* Angle Encoder Invert */
-    public static final SensorDirectionValue canCoderInvert = SensorDirectionValue.Clockwise_Positive;
+    public static final SensorDirectionValue INVERT_CANCODER = SensorDirectionValue.Clockwise_Positive;
 
     /* Swerve Current Limiting */
-    public static final int angleSupplyCurrentLimit = 20;
-    public static final int angleStatorCurrentLimit = 8;
-    public static final boolean angleEnableCurrentLimits = true;
+    public static final int SUPPLY_CURRENT_LIMIT_ANGLE_MOTORS = 20;
+    public static final int STATOR_CURRENT_LIMIT_ANGLE_MOTORS = 8;
+    public static final boolean ENABLE_CURRENT_LIMITS_ANGLE_MOTORS = true;
 
-    public static final int driveSupplyCurrentLimit = 40;
-    public static final int driveStatorCurrentLimit = 20;
-    public static final boolean driveEnableCurrentLimits = true;
+    public static final int SUPPLY_CURRENT_LIMIT_DRIVE_MOTORS = 40;
+    public static final int STATOR_CURRENT_LIMIT_DRIVE_MOTORS = 20;
+    public static final boolean ENABLE_CURRENT_LIMITS_DRIVE_MOTORS = true;
 
     /* Angle Motor PID Values */
-    public static final double angleKP = 45; // 43
-    public static final double angleKI = 0.0;
-    public static final double angleKD = 0.0;
+    public static final double KP_ANGLE_MOTORS = 45; // 43
+    public static final double KI_ANGLE_MOTORS = 0.0;
+    public static final double KD_ANGLE_MOTORS = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.2;
-    public static final double driveKI = 0.0;//Don't use, KI value spools up too much
-    public static final double driveKD = 0.01;
+    public static final double KP_DRIVE_MOTORS = 0.2;
+    public static final double KI_DRIVE_MOTORS = 0.0;//Don't use, KI value spools up too much
+    public static final double KD_DRIVE_MOTORS = 0.01;
 
     /* Drive Motor Characterization Values 
         * Divide SYSID values by 12 to convert from volts to percent output for CTRE */
-    public static final double driveKS = (0.4); //TODO: This must be tuned to specific robot
-    public static final double driveKV = (12.7/maxDriveMotorRPM*60);//0.12 in all docs units are Volts per revolution per second
-    public static final double driveKA = 0;//(0.27 / 12); //TODO: This is final robot weight dependant 
+    public static final double KS_DRIVE_MOTORS = (0.4); //TODO: This must be tuned to specific robot
+    public static final double KV_DRIVE_MOTORS = (12.7/MAX_RPM_DRIVE_MOTOR*60);//0.12 in all docs units are Volts per revolution per second
+    public static final double KA_DRIVE_MOTORS = 0;//(0.27 / 12); //TODO: This is final robot weight dependant 
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxWheelSpeed = maxDriveMotorRPM/driveGearRatio/60*wheelCircumference;//rpm/gear ratio*circumference/60rps
+    public static final double MAX_WHEEL_SPEED_M_S = MAX_RPM_DRIVE_MOTOR/GEAR_RATIO_DRIVE/60*WHEEL_CIRCUMFERENCE;//rpm/gear ratio*circumference/60rps
     /** Radians per Second */
-    public static final double maxAngularVelocity = 10.0;// Radians per second //TODO: This must be tuned to specific robot
+    public static final double MAX_ANG_VEL_RAD_S = 10.0;// Radians per second //TODO: This must be tuned to specific robot
 
     /* Neutral Modes */
-    public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;//TODO: check if the wheel can turn by hand in angle
-    public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue NEUTRAL_BREAK_MODE_ANGLE_MOTORS = NeutralModeValue.Coast;//TODO: check if the wheel can turn by hand in angle
+    public static final NeutralModeValue NEUTRAL_BREAK_MODE_DRIVE_MOTORS = NeutralModeValue.Brake;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
     public static final class frontLeftModule { //TODO: This must be tuned to specific robot
-        public static final SwerveModuleConstants constants = 
+        public static final SwerveModuleConstants MODULE_CONSTANTS_FRONT_LEFT = 
             new SwerveModuleConstants(
                 40,
                 4,
@@ -73,7 +73,7 @@ public final class SwerveConstants {
 
     /* Front Right Module - Module 1 */
     public static final class frontRightModule { //TODO: This must be tuned to specific robot
-        public static final SwerveModuleConstants constants = 
+        public static final SwerveModuleConstants MODULE_CONSTANTS_FRONT_RIGHT = 
             new SwerveModuleConstants(
                 10,
                 1,
@@ -84,7 +84,7 @@ public final class SwerveConstants {
     
     /* Back Left Module - Module 2 */
     public static final class rearLeftModule { //TODO: This must be tuned to specific robot
-        public static final SwerveModuleConstants constants = 
+        public static final SwerveModuleConstants MODULE_CONSTANTS_REAR_LEFT = 
             new SwerveModuleConstants(
                 30,
                 3,
@@ -95,7 +95,7 @@ public final class SwerveConstants {
 
     /* Back Right Module - Module 3 */
     public static final class rearRightModule { //TODO: This must be tuned to specific robot
-        public static final SwerveModuleConstants constants = 
+        public static final SwerveModuleConstants MODULE_CONSTANTS_REAR_RIGHT = 
             new SwerveModuleConstants(
                 20,
                 2,

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.swerve;
 
 import frc.robot.subsystems.NavXSubsystem;
 
@@ -23,21 +23,21 @@ public class SwerveSubsystem extends SubsystemBase {
     //this SwerveDrive kinematics needs to be created in the same order as the  array for the swerve modules
     //below This is why it has been moved to this class instead of the swerveconstants class. 
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(SwerveConstants.wheelBase / 2.0, SwerveConstants.trackWidth / 2.0),//fR
-            new Translation2d(-SwerveConstants.wheelBase / 2.0, SwerveConstants.trackWidth / 2.0),//RR
-            new Translation2d(-SwerveConstants.wheelBase / 2.0, -SwerveConstants.trackWidth / 2.0),//RL
-            new Translation2d(SwerveConstants.wheelBase / 2.0, -SwerveConstants.trackWidth / 2.0));//FL
+            new Translation2d(SwerveConstants.WHEEL_BASE / 2.0, SwerveConstants.TRACK_WIDTH / 2.0),//fR
+            new Translation2d(-SwerveConstants.WHEEL_BASE / 2.0, SwerveConstants.TRACK_WIDTH / 2.0),//RR
+            new Translation2d(-SwerveConstants.WHEEL_BASE / 2.0, -SwerveConstants.TRACK_WIDTH / 2.0),//RL
+            new Translation2d(SwerveConstants.WHEEL_BASE / 2.0, -SwerveConstants.TRACK_WIDTH / 2.0));//FL
 
 
     public SwerveSubsystem() {
-        gyro = new NavXSubsystem();
+        gyro = new NavXSubsystem(); //TODO fix this so gyro is created as a sensor in the robot container
         gyro.ahrsInit();
 
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule( "FR", SwerveConstants.frontRightModule.constants),//FR
-            new SwerveModule( "RR", SwerveConstants.rearRightModule.constants),//RR
-            new SwerveModule( "RL", SwerveConstants.rearLeftModule.constants),//RL
-            new SwerveModule( "FL", SwerveConstants.frontLeftModule.constants)//FL
+            new SwerveModule( "FR", SwerveConstants.frontRightModule.MODULE_CONSTANTS_FRONT_RIGHT),//FR
+            new SwerveModule( "RR", SwerveConstants.rearRightModule.MODULE_CONSTANTS_REAR_RIGHT),//RR
+            new SwerveModule( "RL", SwerveConstants.rearLeftModule.MODULE_CONSTANTS_REAR_LEFT),//RL
+            new SwerveModule( "FL", SwerveConstants.frontLeftModule.MODULE_CONSTANTS_FRONT_LEFT)//FL
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -68,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     /* Sets the states of each module using a closed loop motor velocity and angular position*/
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.maxWheelSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.MAX_WHEEL_SPEED_M_S);
         for (int i = 0; i < mSwerveMods.length; i++) {
             mSwerveMods[i].setDesiredState(desiredStates[i]);
         }

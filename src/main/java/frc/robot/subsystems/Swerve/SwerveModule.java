@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -51,7 +51,7 @@ public class SwerveModule {
     }
 
     public void resetToAbsolute(){//TODO find out if we need to do this since we are using the canCoder as a Remote encoder
-        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.angleGearRatio);
+        double absolutePosition = SwerveConversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.GEAR_RATIO_ANGLE);
         mAngleMotor.setPosition(absolutePosition);
     }
     
@@ -88,7 +88,7 @@ public class SwerveModule {
 
     //TODO go over this to make sure the angle makes sense
     private void setAngle(SwerveModuleState desiredState){
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxWheelSpeed * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.MAX_WHEEL_SPEED_M_S * 0.01)) ? lastAngle : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
         double angleD= angle.getDegrees();
         mAngleMotor.setControl(positionVoltageRequestAngle.withPosition(angleD/360));
         lastAngle = angle;
@@ -104,7 +104,7 @@ public class SwerveModule {
     private void configAngleEncoder(){   
         CANcoderConfiguration swerveCanCoderConfig= new CANcoderConfiguration();
         swerveCanCoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-        swerveCanCoderConfig.MagnetSensor.SensorDirection = SwerveConstants.canCoderInvert;
+        swerveCanCoderConfig.MagnetSensor.SensorDirection = SwerveConstants.INVERT_CANCODER;
 
         angleEncoder.getConfigurator().apply(swerveCanCoderConfig);
         MagnetSensorConfigs myMagnetSensorConfigs = new MagnetSensorConfigs();
@@ -115,16 +115,16 @@ public class SwerveModule {
 
     private void  configAngleMotor() {
         CurrentLimitsConfigs angleCurrentLimits = new CurrentLimitsConfigs();
-        angleCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.angleEnableCurrentLimits;
-        angleCurrentLimits.SupplyCurrentLimit = SwerveConstants.angleSupplyCurrentLimit;
+        angleCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.ENABLE_CURRENT_LIMITS_ANGLE_MOTORS;
+        angleCurrentLimits.SupplyCurrentLimit = SwerveConstants.SUPPLY_CURRENT_LIMIT_ANGLE_MOTORS;
         angleCurrentLimits.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
-        angleCurrentLimits.StatorCurrentLimitEnable =SwerveConstants.angleEnableCurrentLimits;
-        angleCurrentLimits.StatorCurrentLimit=SwerveConstants.angleStatorCurrentLimit;
+        angleCurrentLimits.StatorCurrentLimitEnable =SwerveConstants.ENABLE_CURRENT_LIMITS_ANGLE_MOTORS;
+        angleCurrentLimits.StatorCurrentLimit=SwerveConstants.STATOR_CURRENT_LIMIT_ANGLE_MOTORS;
         
         TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
-        swerveAngleFXConfig.Slot0.kP = SwerveConstants.angleKP;
-        swerveAngleFXConfig.Slot0.kI = SwerveConstants.angleKI;
-        swerveAngleFXConfig.Slot0.kD = SwerveConstants.angleKD;
+        swerveAngleFXConfig.Slot0.kP = SwerveConstants.KP_ANGLE_MOTORS;
+        swerveAngleFXConfig.Slot0.kI = SwerveConstants.KI_ANGLE_MOTORS;
+        swerveAngleFXConfig.Slot0.kD = SwerveConstants.KD_ANGLE_MOTORS;
         swerveAngleFXConfig.CurrentLimits = angleCurrentLimits;
         swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;;
         
@@ -133,8 +133,8 @@ public class SwerveModule {
 
         MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 
-        outputConfigs.Inverted = SwerveConstants.angleMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        outputConfigs.NeutralMode = SwerveConstants.angleNeutralMode;
+        outputConfigs.Inverted = SwerveConstants.INVERT_ANGLE_MOTOR ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        outputConfigs.NeutralMode = SwerveConstants.NEUTRAL_BREAK_MODE_ANGLE_MOTORS;
 
         configurator.apply(outputConfigs);
 
@@ -148,19 +148,19 @@ public class SwerveModule {
         
         /* Swerve Drive Motor Configuration */
         CurrentLimitsConfigs driveCurrentLimits = new CurrentLimitsConfigs();
-        driveCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimits;
-        driveCurrentLimits.SupplyCurrentLimit = SwerveConstants.driveSupplyCurrentLimit;
+        driveCurrentLimits.SupplyCurrentLimitEnable = SwerveConstants.ENABLE_CURRENT_LIMITS_DRIVE_MOTORS;
+        driveCurrentLimits.SupplyCurrentLimit = SwerveConstants.SUPPLY_CURRENT_LIMIT_DRIVE_MOTORS;
         driveCurrentLimits.SupplyTimeThreshold = 0.0; //hardcoded to prevent activation
-        driveCurrentLimits.StatorCurrentLimitEnable = SwerveConstants.driveEnableCurrentLimits;
-        driveCurrentLimits.StatorCurrentLimit=SwerveConstants.driveStatorCurrentLimit;
+        driveCurrentLimits.StatorCurrentLimitEnable = SwerveConstants.ENABLE_CURRENT_LIMITS_DRIVE_MOTORS;
+        driveCurrentLimits.StatorCurrentLimit=SwerveConstants.STATOR_CURRENT_LIMIT_DRIVE_MOTORS;
         TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
 
-        swerveDriveFXConfig.Slot0.kP = SwerveConstants.driveKP;
-        swerveDriveFXConfig.Slot0.kI = SwerveConstants.driveKI;
-        swerveDriveFXConfig.Slot0.kD = SwerveConstants.driveKD;
-        swerveDriveFXConfig.Slot0.kS = SwerveConstants.driveKS;
-        swerveDriveFXConfig.Slot0.kV = SwerveConstants.driveKV;
-        swerveDriveFXConfig.Slot0.kA = SwerveConstants.driveKA;
+        swerveDriveFXConfig.Slot0.kP = SwerveConstants.KP_DRIVE_MOTORS;
+        swerveDriveFXConfig.Slot0.kI = SwerveConstants.KI_DRIVE_MOTORS;
+        swerveDriveFXConfig.Slot0.kD = SwerveConstants.KD_DRIVE_MOTORS;
+        swerveDriveFXConfig.Slot0.kS = SwerveConstants.KS_DRIVE_MOTORS;
+        swerveDriveFXConfig.Slot0.kV = SwerveConstants.KV_DRIVE_MOTORS;
+        swerveDriveFXConfig.Slot0.kA = SwerveConstants.KA_DRIVE_MOTORS;
         swerveDriveFXConfig.CurrentLimits = driveCurrentLimits;
 
         TalonFXConfigurator configurator = mDriveMotor.getConfigurator();
@@ -168,8 +168,8 @@ public class SwerveModule {
 
         MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 
-        outputConfigs.NeutralMode = SwerveConstants.driveNeutralMode;
-        outputConfigs.Inverted = SwerveConstants.driveMotorInvert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        outputConfigs.NeutralMode = SwerveConstants.NEUTRAL_BREAK_MODE_DRIVE_MOTORS;
+        outputConfigs.Inverted = SwerveConstants.INVERT_DRIVE_MOTOR ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         
         configurator.apply(outputConfigs);
     }
