@@ -42,8 +42,8 @@ public class RobotContainer {
             new SwerveDriveMPSCommand(
                 swerveSubsystem,
                 () -> MathUtil.applyDeadband(-driver.getRawAxis(translationAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_SPEED_M_S,
-                () -> MathUtil.applyDeadband(-driver.getRawAxis(strafeAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_SPEED_M_S,
-                () -> MathUtil.applyDeadband(-driver.getRawAxis(rotationAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_ANG_SPEED_RAD_S,
+                () -> MathUtil.applyDeadband(driver.getRawAxis(strafeAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_SPEED_M_S,
+                () -> MathUtil.applyDeadband(driver.getRawAxis(rotationAxis), Constants.Teleop.JOYSTICK_DEADBAND)*Constants.Teleop.MAX_ANG_SPEED_RAD_S,
                 () -> robotCentric.getAsBoolean()
                
             )
