@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.Controllers.xBoxBrandon;
+import frc.robot.commands.FollowTargets;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.swerveCommands.SwerveDriveMPSCommand;
 
@@ -33,6 +36,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+    private final LimelightSubsystem limelightSubsystem= new LimelightSubsystem();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -49,9 +53,17 @@ public class RobotContainer {
             )
             
         );
+        limelightSubsystem.setDefaultCommand(limelightSubsystem.checkForTargetsCommand());
+
+    //Trigger bindings (events)
+    //new Trigger(LimeLight::hasTargets).onTrue(LimeLight.getTargetsCommand());
+    
+    Trigger aprilTagdetected = new Trigger(limelightSubsystem::hasTargets);
+
 
         //Configure the button bindings
         configureButtonBindings();
+        aprilTagdetected.whileTrue( new FollowTargets(swerveSubsystem,limelightSubsystem));
     }
 
     /**
