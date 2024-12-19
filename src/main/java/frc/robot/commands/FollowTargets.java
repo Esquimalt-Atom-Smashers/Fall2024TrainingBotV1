@@ -1,7 +1,8 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.LimelightSubsystem;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -35,8 +36,9 @@ public class FollowTargets extends Command {
       
       // Use addRequirements() here to declare subsystem dependencies.
       double targetPosition = m_LimelightSubsystem.getTargets()[0];
+      double targetPositionZ = m_LimelightSubsystem.getTargets()[0];
       //double rot = Math.min(Math.max((targetPosition/5)*(Math.abs(targetPosition)/5),-0.8),0.6);//limit speed 
-      double rot = Math.min(Math.max((targetPosition/Math.abs(targetPosition))*Math.sqrt(Math.abs(targetPosition/20)),-0.8),0.8);
+      double rot = MathUtil.applyDeadband(Math.min(Math.max((targetPosition/Math.abs(targetPosition))*Math.sqrt(Math.abs(targetPosition/20)),-SwerveConstants.MAX_ANG_VEL_RAD_S),SwerveConstants.MAX_ANG_VEL_RAD_S),0.5);
       swerveSubsystem.driveMPS(new Translation2d(0.0,0.0),rot,false);
     }
   
