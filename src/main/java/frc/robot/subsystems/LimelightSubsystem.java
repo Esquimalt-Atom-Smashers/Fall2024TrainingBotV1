@@ -17,6 +17,17 @@ public class LimelightSubsystem extends SubsystemBase{
     static NetworkTableEntry Pipeline = table.getEntry("pipeline");
     static NetworkTableEntry Tv = table.getEntry("tv"); //are there any valid targets
     
+    public double[] getTargetPose(){
+        double pose[]= table.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+        SmartDashboard.putNumber("pose0 ", pose[0]);
+        SmartDashboard.putNumber("pose1", pose[1]);
+        SmartDashboard.putNumber("pose2", pose[2]);
+        SmartDashboard.putNumber("pose3", pose[3]);
+        SmartDashboard.putNumber("pose4", pose[4]);
+        SmartDashboard.putNumber("pose5", pose[5]);
+        return pose;
+        
+    }
     
     public  double[] getTargets(){
         //Brandon Feb 15: I solved the error you were having with the smartDashboard. 

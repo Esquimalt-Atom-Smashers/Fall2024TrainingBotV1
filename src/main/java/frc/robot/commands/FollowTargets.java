@@ -3,6 +3,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -10,6 +11,9 @@ public class FollowTargets extends Command {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private SwerveSubsystem swerveSubsystem;
     private LimelightSubsystem m_LimelightSubsystem;
+    private final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
   
     /**
      * Creates a new ExampleCommand.
@@ -33,13 +37,14 @@ public class FollowTargets extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-      
+      double maxFollowingSpeed =0.4;
+      double followingDistanceM =1.5;
       // Use addRequirements() here to declare subsystem dependencies.
       double targetPosition = m_LimelightSubsystem.getTargets()[0];
-      double targetPositionZ = m_LimelightSubsystem.getTargets()[0];
-      //double rot = Math.min(Math.max((targetPosition/5)*(Math.abs(targetPosition)/5),-0.8),0.6);//limit speed 
+      double targetErrorZ = Math.min(maxFollowingSpeed,Math.max(-maxFollowingSpeed, m_LimelightSubsystem.getTargetPose()[2]-followingDistanceM));
       double rot = MathUtil.applyDeadband(Math.min(Math.max((targetPosition/Math.abs(targetPosition))*Math.sqrt(Math.abs(targetPosition/20)),-SwerveConstants.MAX_ANG_VEL_RAD_S),SwerveConstants.MAX_ANG_VEL_RAD_S),0.5);
-      swerveSubsystem.driveMPS(new Translation2d(0.0,0.0),rot,false);
+      double speedX = xspeedLimiter.calculate(targetErrorZ);
+      swerveSubsystem.driveMPS(new Translation2d(speedX,0.0),rot,false);
     }
   
     // Called once the command ends or is interrupted.
