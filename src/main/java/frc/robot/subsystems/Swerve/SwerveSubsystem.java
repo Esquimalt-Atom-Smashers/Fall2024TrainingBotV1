@@ -1,7 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import frc.robot.subsystems.NavXSubsystem;
-
+import frc.robot.subsystems.PigeonGyro;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     private SwerveModule[] mSwerveMods;
-    public NavXSubsystem gyro;
+    public PigeonGyro gyro;
     //this SwerveDrive kinematics needs to be created in the same order as the  array for the swerve modules
     //below This is why it has been moved to this class instead of the swerveconstants class. 
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
@@ -30,8 +30,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
     public SwerveSubsystem() {
-        gyro = new NavXSubsystem(); //TODO fix this so gyro is created as a sensor in the robot container
-        gyro.ahrsInit();
+        gyro = new PigeonGyro(); //TODO fix this so gyro is created as a sensor in the robot container
+        
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule( "FR", SwerveConstants.frontRightModule.MODULE_CONSTANTS_FRONT_RIGHT),//FR
@@ -46,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
 
-        swerveOdometry = new SwerveDriveOdometry(swerveKinematics, gyro.getRotation2d(), getModulePositions());
+        swerveOdometry = new SwerveDriveOdometry(swerveKinematics, gyro.getYawRotation2d(), getModulePositions());
     }
     //Modified to only run in Closed loop. I don't know why we were running in open loop.
     public void driveMPS(Translation2d translationMPS, double rotationRadPerSecond, boolean fieldRelative) {
@@ -56,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                     translationMPS.getX(), 
                                     translationMPS.getY(), 
                                     rotationRadPerSecond, 
-                                    gyro.getRotation2d()
+                                    gyro.getYawRotation2d()
                                 )
                                 : new ChassisSpeeds(
                                     translationMPS.getX(), 
@@ -79,7 +79,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
+        swerveOdometry.resetPosition(gyro.getYawRotation2d(), getModulePositions(), pose);
     }
 
     public SwerveModuleState[] getModuleStates(){
@@ -112,7 +112,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        swerveOdometry.update(gyro.getRotation2d(), getModulePositions());  
+        swerveOdometry.update(gyro.getYawRotation2d(), getModulePositions());  
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.modulePosition + " Cancoder", mod.getCanCoder().getDegrees());
