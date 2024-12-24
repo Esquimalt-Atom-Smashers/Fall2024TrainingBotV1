@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PigeonGyro extends SubsystemBase{
+    private static final double yawCalibrationValue = 3600.0/3566;
     Pigeon2 gyro = new Pigeon2(0);
 
     public double getPitch(){
@@ -13,8 +14,8 @@ public class PigeonGyro extends SubsystemBase{
         return pitch;
     }
     public double getYaw(){
-        double yaw = gyro.getYaw().getValueAsDouble();
-        return yaw;
+        double yaw = gyro.getYaw().getValueAsDouble()*yawCalibrationValue;
+        return -yaw;//flip yaw direction to be clockwise positive
     }
     public double getRoll(){
         double roll = gyro.getRoll().getValueAsDouble();
