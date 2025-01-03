@@ -1,6 +1,6 @@
 package frc.robot.subsystems.swerve;
 
-import frc.robot.subsystems.NavXSubsystem;
+//import frc.robot.subsystems.NavXSubsystem;
 import frc.robot.subsystems.PigeonGyro;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
